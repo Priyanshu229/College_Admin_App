@@ -80,7 +80,8 @@
 
         <EditText
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:id="@+id/noticeTitle"
+            android:layout_height="50dp"
             android:hint="Notice Title"/>
 
         <com.google.android.material.button.MaterialButton
