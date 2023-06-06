@@ -15,7 +15,7 @@ import com.google.android.material.card.MaterialCardView;
 public class MainActivity extends AppCompatActivity {
 
     CardView addNotice;
-    CardView addGalleryImage;
+    CardView addGalleryImage, addEBook;
 
 
 
@@ -25,6 +25,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         addNotice= findViewById(R.id.addNotice);
         addGalleryImage = findViewById(R.id.addGalleryImage);
+        addEBook = findViewById(R.id.addEBook);
+
 
         addNotice.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -37,8 +39,17 @@ public class MainActivity extends AppCompatActivity {
         addGalleryImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent inten = new Intent(MainActivity.this, UploadImage.class);
-                startActivity(inten);
+                Intent intent = new Intent(MainActivity.this, UploadImage.class);
+                startActivity(intent);
+            }
+        });
+
+        addEBook.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, UploadPdfActivity.class);
+                startActivity(intent);
+
             }
         });
 
