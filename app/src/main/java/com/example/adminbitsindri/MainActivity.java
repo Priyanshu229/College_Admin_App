@@ -1,5 +1,6 @@
 package com.example.adminbitsindri;
 
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 
@@ -14,6 +15,7 @@ import com.google.android.material.card.MaterialCardView;
 public class MainActivity extends AppCompatActivity {
 
     CardView addNotice;
+    CardView addGalleryImage;
 
 
 
@@ -22,12 +24,21 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         addNotice= findViewById(R.id.addNotice);
+        addGalleryImage = findViewById(R.id.addGalleryImage);
 
         addNotice.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, uploadNotice.class);
                 startActivity(intent);
+            }
+        });
+
+        addGalleryImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent inten = new Intent(MainActivity.this, UploadImage.class);
+                startActivity(inten);
             }
         });
 
