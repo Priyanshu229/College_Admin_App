@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#D6CCF2"
+    android:background="@drawable/main_background"
     android:padding="16dp"
     tools:context=".UploadImage">
 
@@ -89,7 +89,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:scaleType="centerCrop"
-                android:background="#D6CCF2"
+                android:background="@drawable/main_background"
                 android:id="@+id/galleryImageView"/>
         </com.google.android.material.card.MaterialCardView>
 

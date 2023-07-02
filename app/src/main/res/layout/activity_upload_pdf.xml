@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#D6CCF2"
+    android:background="@drawable/main_background"
     android:padding="16dp"
     tools:context=".UploadPdfActivity">
 
@@ -58,6 +58,14 @@
 
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="No File selected"
+            android:layout_gravity="center"
+            android:textSize="16sp"
+            android:id="@+id/pdfTextView"/>
 
 
         <!--  <com.google.android.material.textfield.TextInputLayout
