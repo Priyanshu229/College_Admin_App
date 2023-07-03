@@ -11,12 +11,13 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 
+import com.example.adminbitsindri.faculty.UpdateFaculty;
 import com.google.android.material.card.MaterialCardView;
 
 public class MainActivity extends AppCompatActivity {
 
     CardView addNotice;
-    CardView addGalleryImage, addEBook;
+    CardView addGalleryImage, addEBook, addFaculty;
 
 
 
@@ -28,6 +29,8 @@ public class MainActivity extends AppCompatActivity {
         addNotice= findViewById(R.id.addNotice);
         addGalleryImage = findViewById(R.id.addGalleryImage);
         addEBook = findViewById(R.id.addEBook);
+        addFaculty = findViewById(R.id.addFaculty);
+
 
 
         addNotice.setOnClickListener(new View.OnClickListener() {
@@ -50,6 +53,14 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, UploadPdfActivity.class);
+                startActivity(intent);
+
+            }
+        });
+        addFaculty.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, UpdateFaculty.class);
                 startActivity(intent);
 
             }

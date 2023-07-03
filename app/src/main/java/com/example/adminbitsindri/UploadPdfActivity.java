@@ -20,6 +20,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -31,6 +32,7 @@ import com.google.firebase.storage.UploadTask;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 
 public class UploadPdfActivity extends AppCompatActivity {
 
@@ -38,14 +40,14 @@ public class UploadPdfActivity extends AppCompatActivity {
 
     private Button uploadPdfBtn;
     private EditText pdfTitle;
-    private final int REQ=1;
+    private final int REQ = 1;
     private Uri pdfData;
     private TextView pdfTextView;
 
     private DatabaseReference databaseReference;
     private StorageReference storageReference;
     private String pdfName, title;
-    String downloadUrl="";
+    String downloadUrl = "";
     private ProgressDialog pd;
 
     @Override
@@ -54,11 +56,11 @@ public class UploadPdfActivity extends AppCompatActivity {
         setContentView(R.layout.activity_upload_pdf);
 
 
-        reference = FirebaseDatabase.getInstance().getReference();
+        databaseReference = FirebaseDatabase.getInstance().getReference();
         storageReference = FirebaseStorage.getInstance().getReference();
         addPdf = findViewById(R.id.addPdf);
         pdfTitle = findViewById(R.id.pdfTitle);
-        pdfTextView =  findViewById(R.id.pdfTextView);
+        pdfTextView = findViewById(R.id.pdfTextView);
         uploadPdfBtn = findViewById(R.id.uploadPdfBtn);
         pd = new ProgressDialog(this);
 
@@ -73,13 +75,13 @@ public class UploadPdfActivity extends AppCompatActivity {
         uploadPdfBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                title=pdfTitle.getText().toString();
-                if(title.isEmpty()){
+                title = pdfTitle.getText().toString();
+                if (title.isEmpty()) {
                     pdfTitle.setError("Empty");
                     pdfTitle.requestFocus();
-                }else if(pdfData == null){
+                } else if (pdfData == null) {
                     Toast.makeText(UploadPdfActivity.this, "Please Upload PDF", Toast.LENGTH_SHORT).show();
-                }else{
+                } else {
                     uploadPdf();
                 }
 
@@ -88,26 +90,51 @@ public class UploadPdfActivity extends AppCompatActivity {
     }
 
     private void uploadPdf() {
-        StorageReference reference = storageReference.child("pdf/"+pdfName+"-"+System.currentTimeMillis()+".pdf");
+        pd.setTitle("Please Wait......");
+        pd.setMessage("Uploading pdf");
+        pd.show();
+        StorageReference reference = storageReference.child("pdf/" + pdfName + "-" + System.currentTimeMillis() + ".pdf");
         reference.putFile(pdfData).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                 Task<Uri> uriTask = taskSnapshot.getStorage().getDownloadUrl();
-                while (!uriTask.isComplete());
+                while (!uriTask.isComplete()) ;
                 Uri uri = uriTask.getResult();
-                uploadData(String.valueOf(uri));
+                uploadData(uri.toString());
             }
         }).addOnFailureListener(new OnFailureListener() {
+
             @Override
             public void onFailure(@NonNull Exception e) {
+                pd.dismiss();
                 Toast.makeText(UploadPdfActivity.this, "Something Went Wrong", Toast.LENGTH_SHORT).show();
             }
         });
     }
 
-    private void uploadData(String valueOf) {
+
+    private void uploadData(String downloadUrl) {
         String uniqueKey = databaseReference.child("pdf").push().getKey();
+        HashMap<String, Object> data = new HashMap<>();
+        data.put("pdfTitle", title);
+        data.put("pdfUrl", downloadUrl);
+
+        databaseReference.child("pdf").child(uniqueKey).setValue(data).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                pd.dismiss();
+                Toast.makeText(UploadPdfActivity.this, "Pdf Uploaded Successfully", Toast.LENGTH_SHORT).show();
+                pdfTitle.setText("");
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                pd.dismiss();
+                Toast.makeText(UploadPdfActivity.this, "Failed to upload Pdf", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
+
 
     private void openGallery() {
 
@@ -120,25 +147,25 @@ public class UploadPdfActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode==REQ && resultCode == RESULT_OK){
-           pdfData = data.getData();
-           if(pdfData.toString().startsWith("content://")){
-               Cursor cursor = null;
-               try {
-                   cursor = UploadPdfActivity.this.getContentResolver().query(pdfData, null, null, null, null);
-                   if(cursor != null && cursor.moveToFirst()){
-                       pdfName = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
-                   }
-               } catch (Exception e) {
-                   throw new RuntimeException(e);
-               }
+        if (requestCode == REQ && resultCode == RESULT_OK) {
+            pdfData = data.getData();
+            if (pdfData.toString().startsWith("content://")) {
+                Cursor cursor = null;
+                try {
+                    cursor = UploadPdfActivity.this.getContentResolver().query(pdfData, null, null, null, null);
+                    if (cursor != null && cursor.moveToFirst()) {
+                        pdfName = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
+                    }
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
 
-           }else if(pdfData.toString().startsWith("file://")){
+            } else if (pdfData.toString().startsWith("file://")) {
 
-               pdfName = new File(pdfData.toString()).getName();
+                pdfName = new File(pdfData.toString()).getName();
 
-           }
-           pdfTextView.setText(pdfName);
+            }
+            pdfTextView.setText(pdfName);
 
         }
     }
